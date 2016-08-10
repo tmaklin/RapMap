@@ -1063,6 +1063,8 @@ int rapMapMap(int argc, char* argv[]) {
 
 	if (!noout.getValue()) {
 	    rapmap::utils::writeSAMHeader(rmi, outLog);
+	} else if (ebib.getValue() && haveOutputFile) {
+	    rapmap::utils::writeSAMHeader(rmi, outLog);
 	}
 
 	SpinLockT iomutex;
