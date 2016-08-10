@@ -90,6 +90,8 @@ class NullMutex {
 
 
 constexpr char bases[] = {'A', 'C', 'G', 'T'};
+// Define a global variable for storing the alignment profiles and their counts
+std::unordered_map<std::vector<bool>, long> ALIGNMENTCOUNTS;
 
 inline int32_t tid(uint64_t x) { return static_cast<uint32_t>(x >> 32); }
 inline int32_t pos(uint64_t x) { return static_cast<uint32_t>(x); }
@@ -710,7 +712,8 @@ void processReadsSingle(single_parser* parser,
 	std::shared_ptr<spdlog::logger> outQueue,
         HitCounters& hctr,
         uint32_t maxNumHits,
-        bool noOutput) {
+	bool noOutput,
+	bool ebib) {
 
     auto& txpNames = rmi.txpNames;
     auto& txpLens = rmi.txpLens;
@@ -743,9 +746,24 @@ void processReadsSingle(single_parser* parser,
             auto numHits = hits.size();
             hctr.totHits += numHits;
 
-             if (hits.size() > 0 and !noOutput and hits.size() <= maxNumHits) {
-                rapmap::utils::writeAlignmentsToStream(j->data[i], formatter,
-                        hctr, hits, sstream);
+             if (hits.size() > 0 and hits.size() <= maxNumHits) {
+	         if (!noOutput) {
+                     rapmap::utils::writeAlignmentsToStream(j->data[i], formatter,
+							    hctr, hits, sstream);
+		 } else if (ebib) {
+		     // Write the bitfields to global variable ALIGNMENTCOUNT
+		     std::vector<bool> bit_field(txpNames.size());
+		     for (auto& qa : hits) {
+		         bit_field[qa.tid] = 1;
+		     }
+		     iomutex->lock();
+		     if (ALIGNMENTCOUNTS.find(bit_field) == ALIGNMENTCOUNTS.end()) {
+		         ALIGNMENTCOUNTS[bit_field] = 1;
+		     } else {
+		         ALIGNMENTCOUNTS[bit_field] += 1;
+		     }
+		     iomutex->unlock();
+		 }
             }
 
             if (hctr.numReads > hctr.lastPrint + 1000000) {
@@ -802,7 +820,9 @@ void processReadsPair(paired_parser* parser,
 	std::shared_ptr<spdlog::logger> outQueue,
         HitCounters& hctr,
         uint32_t maxNumHits,
-        bool noOutput) {
+	bool noOutput,
+	bool ebib) {
+
     auto& txpNames = rmi.txpNames;
     std::vector<uint32_t>& txpLens = rmi.txpLens;
     uint32_t n{0};
@@ -850,9 +870,24 @@ void processReadsPair(paired_parser* parser,
                     readLen, maxNumHits, tooManyHits, hctr);
 
 
-            if (jointHits.size() > 0 and !noOutput and jointHits.size() <= maxNumHits) {
-                rapmap::utils::writeAlignmentsToStream(j->data[i], formatter,
-                                                       hctr, jointHits, sstream);
+            if (jointHits.size() > 0 and jointHits.size() <= maxNumHits) {
+	        if (!noOutput) {
+		    rapmap::utils::writeAlignmentsToStream(j->data[i], formatter,
+							   hctr, jointHits, sstream);
+		} else if (ebib) {
+		    // Write bitfields to global variable ALIGNMENTCOUNT
+		    std::vector<bool> bit_field(txpNames.size());
+		    for (auto& qa : jointHits) {
+		        bit_field[qa.tid] = true;
+		    }
+		    iomutex->lock();
+		    if (ALIGNMENTCOUNTS.find(bit_field) == ALIGNMENTCOUNTS.end()) {
+			ALIGNMENTCOUNTS[bit_field] = 1;
+		    } else {
+		        ALIGNMENTCOUNTS[bit_field] += 1;
+		    }
+		    iomutex->unlock();		    
+		}
             }
 
             if (hctr.numReads > hctr.lastPrint + 1000000) {
