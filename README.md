@@ -1,3 +1,5 @@
+Fork of [RapMap](https://github.com/COMBINE-lab/RapMap) with the purpose of outputting pseudoalignment profiles instead of .sam files for further analysis.
+
 [![Join the chat at https://gitter.im/COMBINE-lab/RapMap](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/COMBINE-lab/RapMap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # What is RapMap?
