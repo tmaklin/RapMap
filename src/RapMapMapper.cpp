@@ -1171,13 +1171,28 @@ int rapMapMap(int argc, char* argv[]) {
 		for (auto& t : threads) { t.join(); }
 	    }
 	    consoleLog->info("Done mapping reads.");
-        consoleLog->info("In total saw {} reads.", hctrs.numReads);
-        consoleLog->info("Final # hits per read = {}", hctrs.totHits / static_cast<float>(hctrs.numReads));
+	    consoleLog->info("In total saw {} reads.", hctrs.numReads);
+	    consoleLog->info("Final # hits per read = {}", hctrs.totHits / static_cast<float>(hctrs.numReads));
 	    consoleLog->info("Discarded {} reads because they had > {} alignments",
-		    hctrs.tooManyHits, maxNumHits.getValue());
+			     hctrs.tooManyHits, maxNumHits.getValue());
 
 	    consoleLog->info("flushing output");
 	    outLog->flush();
+	}
+
+	if (ebib.getValue()) {
+	  consoleLog->info("Unique bitfields: {}", alignmentcounts.size());
+	  if (haveOutputFile) {
+	    consoleLog->info("Writing bitfields to outfile.");
+	    for (const auto &counts : alignmentcounts) {
+	      outFile << counts.second;
+	      outFile << "\t";
+	      for (const auto &flag : counts.first) {
+		outFile << flag;
+	      }
+	      outFile << "\n";
+	    }
+	  }
 	}
 
 	if (haveOutputFile) {
