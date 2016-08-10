@@ -964,8 +964,10 @@ int rapMapMap(int argc, char* argv[]) {
     TCLAP::ValueArg<std::string> outname("o", "output", "The output file (default: stdout)", false, "", "path");
     TCLAP::SwitchArg endCollectorSwitch("e", "endCollector", "Use the simpler (and faster) \"end\" collector as opposed to the more sophisticated \"skipping\" collector", false);
     TCLAP::SwitchArg noout("n", "noOutput", "Don't write out any alignments (for speed testing purposes)", false);
+    TCLAP::SwitchArg ebib("b", "bibout", "Output a file for eBIB", false);
     cmd.add(index);
     cmd.add(noout);
+    cmd.add(ebib);
 
     cmd.add(read1);
     cmd.add(read2);
@@ -1103,7 +1105,8 @@ int rapMapMap(int argc, char* argv[]) {
 				outLog,
 				std::ref(hctrs),
 				maxNumHits.getValue(),
-				noout.getValue());
+				noout.getValue(),
+				ebib.getValue());
 		    }
 		} else {
 		    SkippingCollector skippingCollector(&rmi);
@@ -1116,7 +1119,8 @@ int rapMapMap(int argc, char* argv[]) {
 				outLog,
 				std::ref(hctrs),
 				maxNumHits.getValue(),
-				noout.getValue());
+				noout.getValue(),
+				ebib.getValue());
 		    }
 		}
 
@@ -1146,7 +1150,8 @@ int rapMapMap(int argc, char* argv[]) {
 				outLog,
 				std::ref(hctrs),
 				maxNumHits.getValue(),
-				noout.getValue());
+				noout.getValue(),
+				ebib.getValue());
 		    }
 		} else {
 		    SkippingCollector skippingCollector(&rmi);
@@ -1159,7 +1164,8 @@ int rapMapMap(int argc, char* argv[]) {
 				outLog,
 				std::ref(hctrs),
 				maxNumHits.getValue(),
-				noout.getValue());
+				noout.getValue(),
+				ebib.getValue());
 		    }
 		}
 		for (auto& t : threads) { t.join(); }
