@@ -1181,10 +1181,10 @@ int rapMapMap(int argc, char* argv[]) {
 	}
 
 	if (ebib.getValue()) {
-	  consoleLog->info("Unique bitfields: {}", alignmentcounts.size());
+	  consoleLog->info("Unique bitfields: {}", ALIGNMENTCOUNTS.size());
 	  if (haveOutputFile) {
 	    consoleLog->info("Writing bitfields to outfile.");
-	    for (const auto &counts : alignmentcounts) {
+	    for (const auto &counts : ALIGNMENTCOUNTS) {
 	      outFile << counts.second;
 	      outFile << "\t";
 	      for (const auto &flag : counts.first) {
