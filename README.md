@@ -8,6 +8,8 @@ make
 make install
 ```
 
+This creates the rapmap executable in bin/ directory.
+
 # Description
 Fork of [RapMap](https://github.com/COMBINE-lab/RapMap) for the purpose of adding support to output pseudoalignment profiles instead of the usual .sam files output by the original RapMap. Pseudoalignment profiles contain the observed counts for each profile and a string representation of the corresponding mappings.
 
